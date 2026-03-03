@@ -3,12 +3,13 @@ import { GoogleGenAI } from '@google/genai';
 
 export async function POST(req: NextRequest) {
     try {
-        const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
         const { pitch } = await req.json();
 
         if (!pitch) {
             return NextResponse.json({ error: 'Pitch is required' }, { status: 400 });
         }
+
+        const genAI = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY! });
 
         const prompt = `You are a cynical, ruthless venture capitalist and Y-Combinator partner. 
     Your goal is to perform a 'Red-Team' analysis on a startup pitch. You do NOT sugarcoat. 
@@ -28,9 +29,10 @@ export async function POST(req: NextRequest) {
     
     Be analytical, aggressive, and concise.`;
 
-        const response = await ai.models.generateContent({
-            model: 'gemini-1.5-flash',
-            contents: prompt,
+        // Using pattern confirmed by diagnostic scripts
+        const response = await genAI.models.generateContent({
+            model: "models/gemini-1.5-flash",
+            contents: [{ role: 'user', parts: [{ text: prompt }] }]
         });
 
         return NextResponse.json({

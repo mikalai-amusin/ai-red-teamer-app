@@ -14,11 +14,8 @@ function HeroContent() {
     const [loading, setLoading] = useState(false);
     const [report, setReport] = useState<string | null>(null);
 
-    // Auto-restore report if user reloads
-    useEffect(() => {
-        const savedReport = localStorage.getItem('last_roast');
-        if (savedReport) setReport(savedReport);
-    }, []);
+    // Page refresh should return to home (no auto-restore)
+    // Removed the useEffect that was restoring from localStorage
 
     const handleRoast = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -39,6 +36,8 @@ function HeroContent() {
 
             if (res.ok && data.report) {
                 setReport(data.report);
+                // We still save to localStorage in case we want to re-enable restore later, 
+                // but we don't auto-load it on mount.
                 localStorage.setItem('last_roast', data.report);
             } else {
                 console.error('Failed to parse roast:', data.error);
@@ -50,6 +49,19 @@ function HeroContent() {
         } finally {
             setLoading(false);
         }
+    };
+
+    const handleDownload = () => {
+        if (!report) return;
+        const blob = new Blob([report], { type: 'text/markdown' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `devroast-report-${Date.now()}.md`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
     };
 
     if (loading) {
@@ -72,15 +84,37 @@ function HeroContent() {
                         dangerouslySetInnerHTML={{ __html: htmlContent }}
                     />
 
-                    <button
-                        className={styles.resetButton}
-                        onClick={() => {
-                            setReport(null);
-                            localStorage.removeItem('last_roast');
-                        }}
-                    >
-                        <FiRefreshCw style={{ marginRight: '0.5rem', display: 'inline' }} /> ROAST ANOTHER PITCH
-                    </button>
+                    <div className={styles.actionButtons}>
+                        <button
+                            className={styles.resetButton}
+                            onClick={() => {
+                                setReport(null);
+                                localStorage.removeItem('last_roast');
+                            }}
+                        >
+                            <FiRefreshCw style={{ marginRight: '0.5rem', display: 'inline' }} /> ROAST ANOTHER PITCH
+                        </button>
+
+                        <button
+                            className={styles.downloadButton}
+                            onClick={handleDownload}
+                        >
+                            <FiCode style={{ marginRight: '0.5rem', display: 'inline' }} /> DOWNLOAD MARKDOWN
+                        </button>
+                    </div>
+                </div>
+
+                <div className={styles.features} id="how-it-works" style={{ marginTop: '4rem' }}>
+                    <div className={styles.featureItem}>
+                        <div className={styles.featureIcon}><FiCrosshair /></div>
+                        <h3>Market Flaws</h3>
+                        <p>We find the exact reason your target audience won't care.</p>
+                    </div>
+                    <div className={styles.featureItem}>
+                        <div className={styles.featureIcon}><FiTrendingDown /></div>
+                        <h3>Competitor Threats</h3>
+                        <p>Why incumbent companies will crush your current strategy.</p>
+                    </div>
                 </div>
             </div>
         );
