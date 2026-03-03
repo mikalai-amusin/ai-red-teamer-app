@@ -9,7 +9,7 @@ export const metadata: Metadata = {
         title: 'DevRoast | AI Red-Teamer for Indie Hackers',
         description: 'Ruthless feedback on your startup pitch from an AI trained on Y-Combinator patterns.',
         type: 'website',
-        url: 'https://devroast.io', // Placeholder for user's final domain
+        url: 'https://ai-red-teamer.vercel.app',
     },
     twitter: {
         card: 'summary_large_image',

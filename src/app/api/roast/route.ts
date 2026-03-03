@@ -10,25 +10,26 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ error: 'Pitch is required' }, { status: 400 });
         }
 
-        const prompt = `You are a ruthless, highly-experienced Silicon Valley investor and Y-Combinator partner. 
-    You do NOT sugarcoat anything. 
-    A solo founder has just pitched you the following startup idea:
-
+        const prompt = `You are a cynical, ruthless venture capitalist and Y-Combinator partner. 
+    Your goal is to perform a 'Red-Team' analysis on a startup pitch. You do NOT sugarcoat. 
+    You are looking for reasons to say NO.
+    
+    A founder has just pitched you:
     "${pitch}"
 
-    Tear it apart. Identify the critical market flaws, why competitors will crush them, and the biggest delusion the founder is currently suffering from.
-    Structure your response clearly using markdown with the following sections:
+    Tear it apart. Expose the structural flaws, the competitive threats, and the founder's biggest delusion.
+    Structure your response using these markdown headers:
     
     # Reality Check Report
-    ## The Delusion (1 sentence summary of why this is a bad idea)
-    ## Critical Market Flaws (Bullet points)
-    ## The Competitor Threat (Who will crush them and why)
-    ## Suggested Pivot (If any, what's a better direction?)
+    ## The Delusion (Brutal 1-sentence summary)
+    ## Critical Market Flaws (The deep structural issues)
+    ## The Competitor Threat (Who will eat your lunch?)
+    ## Suggested Pivot (The only way you survive)
     
-    Be concise, brutal, but highly analytical.`;
+    Be analytical, aggressive, and concise.`;
 
         const response = await ai.models.generateContent({
-            model: 'gemini-2.5-flash',
+            model: 'gemini-1.5-flash',
             contents: prompt,
         });
 
