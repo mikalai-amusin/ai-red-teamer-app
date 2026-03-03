@@ -31,7 +31,7 @@ export async function POST(req: NextRequest) {
 
         // Using pattern confirmed by diagnostic scripts
         const response = await genAI.models.generateContent({
-            model: "models/gemini-1.5-flash",
+            model: "models/gemini-2.5-flash",
             contents: [{ role: 'user', parts: [{ text: prompt }] }]
         });
 

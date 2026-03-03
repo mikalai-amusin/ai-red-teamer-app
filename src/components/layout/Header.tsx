@@ -7,14 +7,12 @@ export default function Header() {
     return (
         <header className={styles.header}>
             <div className={`container ${styles.headerContainer}`}>
-                <Link href="/" className={styles.logo} onClick={() => {
-                    localStorage.removeItem('last_roast');
-                }}>
+                <a href="/" className={styles.logo}>
                     <FiTerminal className={styles.logoIcon} />
                     <span>Dev</span><span className={styles.accent}>Roast</span>
-                </Link>
+                </a>
                 <nav className={styles.nav}>
-                    <Link href="#how-it-works" scroll={false} className={styles.navLink}>How it Works</Link>
+                    <a href="#how-it-works" className={styles.navLink}>How it Works</a>
                     <a href="https://github.com/mikalai-amusin/ai-red-teamer-app" target="_blank" rel="noopener noreferrer" className={styles.navLink}>GitHub</a>
                 </nav>
             </div>
