@@ -2,7 +2,7 @@
 import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { FiCode, FiCrosshair, FiTrendingDown, FiLock, FiRefreshCw, FiUnlock } from 'react-icons/fi';
+import { FiCode, FiCrosshair, FiTrendingDown, FiLock, FiRefreshCw } from 'react-icons/fi';
 import DOMPurify from 'dompurify';
 import { marked } from 'marked';
 import styles from './Hero.module.css';
@@ -13,24 +13,18 @@ function HeroContent() {
     const [pitch, setPitch] = useState('');
     const [loading, setLoading] = useState(false);
     const [report, setReport] = useState<string | null>(null);
-    const [unlocked, setUnlocked] = useState(false);
-    const [checkoutLoading, setCheckoutLoading] = useState(false);
 
-    // Check for success redirect
+    // Auto-restore report if user reloads
     useEffect(() => {
-        if (searchParams.get('success')) {
-            setUnlocked(true);
-            const savedReport = localStorage.getItem('last_roast');
-            if (savedReport) setReport(savedReport);
-        }
-    }, [searchParams]);
+        const savedReport = localStorage.getItem('last_roast');
+        if (savedReport) setReport(savedReport);
+    }, []);
 
     const handleRoast = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!pitch.trim()) return;
         setLoading(true);
         setReport(null);
-        setUnlocked(false);
 
         try {
             const res = await fetch('/api/roast', {
@@ -58,48 +52,6 @@ function HeroContent() {
         }
     };
 
-    const handleUnlock = async () => {
-        setCheckoutLoading(true);
-        try {
-            const res = await fetch('/api/checkout', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ pitch }),
-            });
-            const { url } = await res.json();
-            if (url) window.location.href = url;
-        } catch (err) {
-            console.error('Checkout error:', err);
-            alert('Failed to initialize checkout. Please check your connection.');
-        } finally {
-            setCheckoutLoading(false);
-        }
-    };
-
-    // Split logic
-    const getSplitMarkdown = () => {
-        if (!report) return { freeHtml: '', premiumHtml: '' };
-
-        // We look for the competitor threat header to split the content
-        const splitIndex = report.indexOf('## The Competitor Threat');
-
-        if (splitIndex !== -1 && !unlocked) {
-            const freePart = report.substring(0, splitIndex);
-            const premiumPart = report.substring(splitIndex);
-
-            return {
-                freeHtml: DOMPurify.sanitize(marked.parse(freePart) as string),
-                premiumHtml: DOMPurify.sanitize(marked.parse(premiumPart) as string)
-            };
-        }
-
-        // Full report if unlocked or split header not found
-        return {
-            freeHtml: DOMPurify.sanitize(marked.parse(report) as string),
-            premiumHtml: ''
-        };
-    };
-
     if (loading) {
         return (
             <div className={styles.heroSection}>
@@ -110,46 +62,21 @@ function HeroContent() {
     }
 
     if (report) {
-        const { freeHtml, premiumHtml } = getSplitMarkdown();
+        const htmlContent = DOMPurify.sanitize(marked.parse(report) as string);
 
         return (
             <div className={styles.heroSection}>
                 <div className={styles.reportContainer}>
-                    {/* Public Section */}
                     <div
                         className={styles.markdownContent}
-                        dangerouslySetInnerHTML={{ __html: freeHtml }}
+                        dangerouslySetInnerHTML={{ __html: htmlContent }}
                     />
-
-                    {/* Premium/Blurred Section */}
-                    {premiumHtml && !unlocked && (
-                        <div className={styles.premiumOverlayContainer}>
-                            <div
-                                className={`${styles.markdownContent} ${styles.blurredContent}`}
-                                dangerouslySetInnerHTML={{ __html: premiumHtml }}
-                            />
-                            <div className={styles.unlockOverlay}>
-                                <FiUnlock className={styles.unlockIcon} />
-                                <h3>Unlock the Competitor Threat & Pivot Strategy</h3>
-                                <p>Don't build blind. See exactly why incumbents will crush you, and the data-backed pivot our AI recommends.</p>
-                                <button
-                                    className={styles.unlockButton}
-                                    onClick={handleUnlock}
-                                    disabled={checkoutLoading}
-                                >
-                                    {checkoutLoading ? 'INITIALIZING...' : 'Reveal Full Report - $9'}
-                                </button>
-                                <span className={styles.trustedBadge}>One-time payment. Secure via Stripe.</span>
-                            </div>
-                        </div>
-                    )}
 
                     <button
                         className={styles.resetButton}
                         onClick={() => {
                             setReport(null);
                             localStorage.removeItem('last_roast');
-                            window.history.pushState({}, '', '/');
                         }}
                     >
                         <FiRefreshCw style={{ marginRight: '0.5rem', display: 'inline' }} /> ROAST ANOTHER PITCH
