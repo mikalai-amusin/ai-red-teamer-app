@@ -1,0 +1,73 @@
+.terminalContainer {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-light);
+    border-radius: 8px;
+    overflow: hidden;
+    font-family: var(--font-mono);
+    max-width: 800px;
+    width: 100%;
+    margin: 2rem auto;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+}
+
+.terminalHeader {
+    background: #2a2a30;
+    padding: 0.5rem 1rem;
+    display: flex;
+    gap: 0.5rem;
+    border-bottom: 1px solid var(--border-dim);
+}
+
+.buttonRed,
+.buttonYellow,
+.buttonGreen {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+}
+
+.buttonRed {
+    background: #ff5f56;
+}
+
+.buttonYellow {
+    background: #ffbd2e;
+}
+
+.buttonGreen {
+    background: #27c93f;
+}
+
+.terminalBody {
+    padding: 1.5rem;
+    min-height: 200px;
+    color: var(--accent-neon-green);
+    font-size: 0.875rem;
+    text-align: left;
+}
+
+.line {
+    margin-bottom: 0.5rem;
+}
+
+.cursor {
+    display: inline-block;
+    width: 8px;
+    height: 14px;
+    background: var(--accent-neon-green);
+    margin-left: 4px;
+    vertical-align: middle;
+    animation: blink 1s step-end infinite;
+}
+
+@keyframes blink {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0;
+    }
+}
