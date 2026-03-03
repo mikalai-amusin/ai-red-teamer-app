@@ -15,7 +15,10 @@ export const metadata: Metadata = {
         card: 'summary_large_image',
         title: 'DevRoast | AI Red-Teamer',
         description: 'I just got my startup pitch destroyed. Try it yourself.',
-    }
+    },
+    icons: {
+        icon: '/icon.png',
+    },
 };
 
 export default function RootLayout({
